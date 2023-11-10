@@ -51,7 +51,7 @@ const playListSongs = songs.filter(song => song.albumId === playlist?.albumId)
             
                 <div class="flex-1 flex items-end">
                     <div class="text-sm text-gray-300 font-normal">
-                        <div transition:name=`playlist ${id} artists`>
+                        <div transition:name=`playlist ${playlist?.id} artists`>
                             <span>{playlist?.artists.join(', ')}</span>
                         </div>
                         <p class="mt-1">
@@ -67,7 +67,7 @@ const playListSongs = songs.filter(song => song.albumId === playlist?.albumId)
           
         </div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-10">
+        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-[1]">
 
         </div>
     </div>

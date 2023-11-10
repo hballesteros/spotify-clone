@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro'
-
 import PlayListItemCard from '@/components/PlayListItemCard.astro'
 import { playlists } from '@/lib/data';
+import Greeting from '@/components/Greeting.svelte';
 ---
 
 <Layout title="Spotify Clone">
@@ -13,8 +13,7 @@ import { playlists } from '@/lib/data';
         <!-- <PageHeader /> -->
 
         <div class="relative z-10 px-6 pt-10">
-            <!--<Greetings /> -->
-            <h1 class="text-3xl font-bold">¡Buenos días!</h1>
+            <Greeting />
 
             <div class="flex flex-wrap mt-6 gap-4">
             {
