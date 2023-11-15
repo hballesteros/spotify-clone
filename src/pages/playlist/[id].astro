@@ -1,15 +1,45 @@
 ---
-import type { GetStaticPaths } from "astro";
 import Layout from '../../layouts/Layout.astro'
-
-import PlayListItemCard from '@/components/PlayListItemCard.astro'
 import { allPlaylists, songs } from '@/lib/data'
+import MusicsTable from '@/components/MusicsTable.astro'
+import { CardPlayButton } from '@/components/CardPlayButton'
+import PrevPlaylistIcon from '@/icons/PrevPlaylist.astro'
+import NextPlaylistIcon from '@/icons/NextPlaylist.astro'
 
 const { id } = Astro.params
 
 const playlist = allPlaylists.find(playlist => playlist.id === id)
 const playListSongs = songs.filter(song => song.albumId === playlist?.albumId)
+const playListColor = playlist?.color.accent
+let songsDuration = 0
 
+playListSongs.forEach(song => {
+    const [minutes, seconds] = song.duration.split(':').map(Number)
+    const totalSeconds = minutes * 60 + seconds
+    songsDuration =songsDuration + totalSeconds
+})
+
+function secondsToHMS(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  let durationString = "";
+
+  if (hours > 0) {
+    durationString += `${hours} h `;
+  }
+
+  if (minutes > 0) {
+    durationString += `${minutes} min `;
+  }
+
+  if (secs > 0 || durationString === "") {
+    durationString += `${secs} s`;
+  }
+
+  return durationString.trim();
+}
 // esto si no queremos que se renderice en el servidor, pero 
 // para este proyecto no tiene sentido por que se crearian miles de 
 // paginas estaticas ya que hay miles de playlists y canciones
@@ -25,12 +55,25 @@ const playListSongs = songs.filter(song => song.albumId === playlist?.albumId)
 <Layout title="Spotify Clone">
     <div
         id="playlist-container"
-        class="relative flex flex-col h-full bg-zinc-900 overflow-x-hidden"
+        class=`relative flex flex-col h-full overflow-x-hidden`
         transition:name=`playlist ${id} box`
     >
         <!-- <PageHeader /> -->
-
-        <header class="flex flex-row gap-8 px-6 mt-20">
+        <header class="flex flex-row px-4 mt-4 gap-2">
+            <button 
+                class="bg-zinc-950 rounded-full p-2 opacity-60 cursor-not-allowed"
+                disabled
+            >
+                <PrevPlaylistIcon />
+            </button>
+            <button 
+                class="bg-zinc-950 rounded-full p-2"
+            >
+                <NextPlaylistIcon />
+            </button>
+        </header>
+        <section class="flex flex-row gap-8 px-4 mt-10">
+           
             <picture class="aspect-square w-56 h-56 flex-none">
                 <img 
                     src={playlist?.cover}
@@ -55,23 +98,30 @@ const playListSongs = songs.filter(song => song.albumId === playlist?.albumId)
                             <span>{playlist?.artists.join(', ')}</span>
                         </div>
                         <p class="mt-1">
-                            <span class="text-white">50 canciones</span>, 3 h aproximadamente
+                            <span class="text-white">{playListSongs.length} canciones</span>, {secondsToHMS(songsDuration)} aproximadamente
                         </p>
                     </div>
                 </div>
             </div>
 
-        </header>
+        </section>
 
-        <div class="relative z-10 px-6 pt-10">
-          
+        <div class="pl-4 pt-6">
+            <CardPlayButton client:load id={id} size="large" />
         </div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-[1]">
+        <div class="relative z-10 px-6 pt-10"> </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-[1]"></div>
 
-        </div>
+        <section class="p-6">
+            <MusicsTable songs={playListSongs} />
+        </section>
     </div>
 
 </Layout>
 
-<style></style>
+<style define:vars={{ playListColor }}>
+    #playlist-container {
+        background-color: var(--playListColor);
+    }
+</style>
